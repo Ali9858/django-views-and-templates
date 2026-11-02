@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Course Details</title>
+
+    <!-- Bootstrap 4 -->
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <link rel="stylesheet"
+          href="{% static 'onlinecourse/course.css' %}">
+</head>
+
+<body>
+
+<!-- Navigation bar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+
+        <a class="navbar-brand"
+           href="{% url 'onlinecourse:popular_course_list' %}">
+            Online Course
+        </a>
+
+        <ul class="nav navbar-nav navbar-right">
+
+            {% if user.is_authenticated %}
+
+            <li>
+                <a class="btn btn-link" href="#">
+                    {{ user.first_name }} ({{ user.username }})
+                </a>
+
+                <a class="btn btn-link"
+                   href="{% url 'onlinecourse:logout' %}">
+                    Logout
+                </a>
+            </li>
+
+            {% else %}
+
+            <li>
+                <form class="form-inline"
+                      action="{% url 'onlinecourse:login' %}"
+                      method="post">
+
+                    {% csrf_token %}
+
+                    <input type="text"
+                           class="form-control"
+                           placeholder="Username"
+                           name="username">
+
+                    <input type="password"
+                           class="form-control"
+                           placeholder="Password"
+                           name="psw">
+
+                    <button class="btn btn-primary" type="submit">
+                        Login
+                    </button>
+
+                    <a class="btn btn-link"
+                       href="{% url 'onlinecourse:registration' %}">
+                        Sign Up
+                    </a>
+
+                </form>
+            </li>
+
+            {% endif %}
+
+        </ul>
+    </div>
+</nav>
+
+
+<!-- Course details -->
+<div class="container mt-4">
+
+    <h2>{{ course.name }}</h2>
+
+    <p>{{ course.description }}</p>
+
+
+    <!-- Lessons -->
+    <h3 class="mt-4">Lessons:</h3>
+
+    <div class="card-columns-vertical">
+
+        {% for lesson in course.lesson_set.all %}
+
+        <div class="card mt-2">
+
+            <div class="card-header">
+                <h5>
+                    Lesson {{ lesson.order|add:1 }}:
+                    {{ lesson.title }}
+                </h5>
+            </div>
+
+            <div class="card-body">
+                {{ lesson.content }}
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <p>No lessons available.</p>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- Course Exam -->
+    {% if user.is_authenticated %}
+
+    <hr>
+
+    <h3 class="mt-4">Course Exam</h3>
+
+    <button class="btn btn-primary btn-block"
+            type="button"
+            data-toggle="collapse"
+            data-target="#exam">
+
+        Start Exam
+
+    </button>
+
+
+    <div id="exam" class="collapse mt-3">
+
+        <form id="questionform"
+              action="{% url 'onlinecourse:submit' course.id %}"
+              method="POST">
+
+            {% csrf_token %}
+
+
+            {% for question in course.question_set.all %}
+
+            <div class="card mt-3">
+
+                <div class="card-header">
+
+                    <h5>{{ question.content }}</h5>
+
+                    <small>
+                        Points: {{ question.grade }}
+                    </small>
+
+                </div>
+
+
+                <div class="card-body">
+
+                    {% for choice in question.choice_set.all %}
+
+                    <div class="form-check">
+
+                        <input type="checkbox"
+                               name="choice_{{ choice.id }}"
+                               class="form-check-input"
+                               id="choice_{{ choice.id }}"
+                               value="{{ choice.id }}">
+
+                        <label class="form-check-label"
+                               for="choice_{{ choice.id }}">
+
+                            {{ choice.content }}
+
+                        </label>
+
+                    </div>
+
+                    {% empty %}
+
+                    <p class="text-warning">
+                        No answer choices available.
+                    </p>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <p class="alert alert-warning mt-3">
+                No questions available for this course.
+            </p>
+
+            {% endfor %}
+
+
+            <button type="submit"
+                    class="btn btn-success btn-block mt-3">
+
+                Submit Exam
+
+            </button>
+
+        </form>
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- Back button -->
+    <a href="{% url 'onlinecourse:popular_course_list' %}"
+       class="btn btn-secondary mt-4">
+
+        Back to courses
+
+    </a>
+
+</div>
+
+
+<!-- Bootstrap JavaScript -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
