@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <title>Course Details</title>
+
+    {% load static %}
+
+    <link rel="stylesheet"
+          type="text/css"
+          href="{% static 'onlinecourse/course.css' %}">
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h2>{{ course.name }}</h2>
+
+        <h5>{{ course.description }}</h5>
+
+    </div>
+
+    <h2>Lessons:</h2>
+
+    {% for lesson in course.lesson_set.all %}
+
+        <div class="card">
+
+            <h5>
+                Lesson {{ lesson.order }} :
+                {{ lesson.title }}
+            </h5>
+
+            <p>{{ lesson.content }}</p>
+
+        </div>
+
+    {% empty %}
+
+        <p>No lessons available.</p>
+
+    {% endfor %}
+
+    <a href="{% url 'onlinecourse:popular_course_list' %}">
+        Back to courses
+    </a>
+
+</body>
+</html>
