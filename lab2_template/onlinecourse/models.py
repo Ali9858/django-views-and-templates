@@ -98,11 +98,11 @@ class Question(models.Model):
         Course,
         on_delete=models.CASCADE
     )
-    content = models.TextField()
+    question_text = models.TextField()
     grade = models.IntegerField(default=0)
 
     def __str__(self):
-        return self.content
+        return self.question_text
 
     def is_get_score(self, selected_ids):
         correct_ids = set(
@@ -127,11 +127,11 @@ class Choice(models.Model):
         Question,
         on_delete=models.CASCADE
     )
-    content = models.CharField(max_length=200)
+    choice_text = models.CharField(max_length=200)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.content
+        return self.choice_text
 
 
 class Submission(models.Model):
